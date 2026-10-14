@@ -94,9 +94,10 @@ Fine-tune any draft with pre-built tactical prompt modifiers:
 
 ## System Architecture
 
+
 ```mermaid
 flowchart TD
-    UI[Vue 3 SPA (Vite)\nModular SFCs & Glassmorphic UI] -->|HTTP / JSON| FastAPI[FastAPI Backend\napp/main.py]
+    UI["Vue 3 SPA (Vite)\nModular SFCs & Glassmorphic UI"] -->|HTTP / JSON| FastAPI["FastAPI Backend\napp/main.py"]
     
     subgraph Local Services
         FastAPI -->|SQLite Operations| DB[(SQLite Database\ndata/linkedin_scheduler.db)]
