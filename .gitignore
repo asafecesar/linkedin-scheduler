@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+
+# Secrets and local config
+.env
+.env.*
+
+# Databases (the SQLite DB stores the LinkedIn access token in its settings table)
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+
+# Node (leftover scaffolding, not used by the app)
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
