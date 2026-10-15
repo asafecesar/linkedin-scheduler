@@ -187,6 +187,31 @@ cd frontend && npm run dev
 Open your browser at **[http://127.0.0.1:8000](http://127.0.0.1:8000)**.  
 Interactive API documentation is available at **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**.
 
+### 5. Running with Docker & Docker Compose
+Alternatively, run the entire stack (multi-stage Vue build + FastAPI) with Docker:
+
+```bash
+# Build and start container in detached mode
+docker compose up --build -d
+
+# Check service logs
+docker compose logs -f app
+
+# Stop the container
+docker compose down
+```
+
+The container automatically bridges to your local host Ollama instance (`http://host.docker.internal:11434`) and persists SQLite data and uploaded media in a Docker named volume (`linkedin_scheduler_data`).
+
+### 6. Running Automated Tests
+```bash
+# Run backend pytest suite (models, database CRUD, routers, mocked AI)
+pytest tests/
+
+# Run frontend vitest suite (state management, API client)
+cd frontend && npm run test
+```
+
 ---
 
 ## Configuration & Environment Variables

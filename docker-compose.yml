@@ -1,0 +1,25 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linkedin-scheduler-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DATA_DIR=/app/data
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      # Optional: set via your host environment or .env file
+      - LINKEDIN_ACCESS_TOKEN=${LINKEDIN_ACCESS_TOKEN:-}
+      - LINKEDIN_PERSON_URN=${LINKEDIN_PERSON_URN:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - linkedin_data:/app/data
+
+volumes:
+  linkedin_data:
+    name: linkedin_scheduler_data
