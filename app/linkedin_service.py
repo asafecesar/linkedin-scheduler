@@ -3,9 +3,11 @@ import httpx
 from typing import Dict, Any, Tuple, Optional
 from app import database as db
 
+from app.config import settings
+
 def get_credentials(custom_token: Optional[str] = None, custom_urn: Optional[str] = None) -> Tuple[str, str]:
-    token = (custom_token and custom_token.strip()) or db.get_setting("linkedin_access_token", "") or os.environ.get("LINKEDIN_ACCESS_TOKEN", "")
-    urn = (custom_urn and custom_urn.strip()) or db.get_setting("linkedin_person_urn", "") or os.environ.get("LINKEDIN_PERSON_URN", "")
+    token = (custom_token and custom_token.strip()) or db.get_setting("linkedin_access_token", "") or (settings.linkedin_access_token or "")
+    urn = (custom_urn and custom_urn.strip()) or db.get_setting("linkedin_person_urn", "") or (settings.linkedin_person_urn or "")
     return token.strip(), urn.strip()
 
 async def verify_linkedin_token(token_input: Optional[str] = None) -> Dict[str, Any]:
@@ -82,7 +84,7 @@ async def get_image_bytes_and_type(image_url: str) -> Tuple[bytes, str]:
 
     if image_url.startswith("/static/uploads/"):
         filename = image_url.replace("/static/uploads/", "").strip("/")
-        local_path = BASE_DIR / "data" / "uploads" / filename
+        local_path = settings.uploads_dir / filename
         if not local_path.exists():
             raise FileNotFoundError(f"Local image file not found: {filename}")
         data = local_path.read_bytes()

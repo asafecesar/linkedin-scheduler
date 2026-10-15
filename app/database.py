@@ -4,13 +4,10 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, List, Any
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = Path(os.environ.get("DATA_DIR", BASE_DIR / "data"))
-DATA_DIR.mkdir(parents=True, exist_ok=True)
-DB_PATH = DATA_DIR / "linkedin_scheduler.db"
+from app.config import settings
 
 def get_connection() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
+    conn = sqlite3.connect(str(settings.db_path), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 

@@ -7,10 +7,10 @@ from app import database as db
 from app import linkedin_service
 from app.models import PostCreate, PostUpdate, PostResponse
 
+from app.config import settings
+
 router = APIRouter(prefix="/api/posts", tags=["Posts & Scheduling"])
 
-UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "uploads"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 MAX_FILE_SIZE = 15 * 1024 * 1024  # 15MB
 
@@ -28,7 +28,7 @@ async def upload_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="The file exceeds the 15MB limit.")
 
     filename = f"{uuid.uuid4().hex}{ext}"
-    dest_path = UPLOAD_DIR / filename
+    dest_path = settings.uploads_dir / filename
     with open(dest_path, "wb") as f:
         f.write(content)
 

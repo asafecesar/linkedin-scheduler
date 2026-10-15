@@ -10,14 +10,13 @@ from app import database as db
 from app import ollama_service
 from app import linkedin_service
 from app import scheduler_service
-from app.routers import posts, generation, settings
-
-BASE_DIR = Path(__file__).resolve().parent.parent
+from app.routers import posts, generation, settings as settings_router
+from app.config import settings as config
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    scheduler_service.start_scheduler(interval_seconds=30)
+    scheduler_service.start_scheduler(interval_seconds=config.scheduler_interval_seconds)
     yield
     # Shutdown
     scheduler_service.stop_scheduler()
@@ -41,7 +40,7 @@ app.add_middleware(
 # Routers
 app.include_router(posts.router)
 app.include_router(generation.router)
-app.include_router(settings.router)
+app.include_router(settings_router.router)
 
 # Health Check
 @app.get("/api/health", tags=["System"])
@@ -57,24 +56,21 @@ async def health_check():
         "user_urn": urn or None
     }
 
-UPLOADS_DIR = BASE_DIR / "data" / "uploads"
-UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
-FRONTEND_DIST = BASE_DIR / "frontend" / "dist"
-
 # Mount static uploads
-app.mount("/static/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="static_uploads")
+app.mount("/static/uploads", StaticFiles(directory=str(config.uploads_dir)), name="static_uploads")
 
 # Mount Vue static assets if dist exists
-if FRONTEND_DIST.exists() and (FRONTEND_DIST / "assets").exists():
-    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
+dist_dir = config.frontend_dist_dir
+if dist_dir.exists() and (dist_dir / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(dist_dir / "assets")), name="assets")
 
 @app.get("/{full_path:path}", include_in_schema=False)
 async def serve_spa(full_path: str):
-    if FRONTEND_DIST.exists():
-        file_path = FRONTEND_DIST / full_path
+    if dist_dir.exists():
+        file_path = dist_dir / full_path
         if full_path and file_path.is_file():
             return FileResponse(file_path)
-        index_file = FRONTEND_DIST / "index.html"
+        index_file = dist_dir / "index.html"
         if index_file.is_file():
             return FileResponse(index_file)
 
