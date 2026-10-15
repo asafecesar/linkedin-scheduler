@@ -16,7 +16,9 @@ async function request(url, options = {}) {
     }
   });
 
-  const contentType = response.headers.get('content-type') || '';
+  const contentType = (response.headers && typeof response.headers.get === 'function')
+    ? (response.headers.get('content-type') || '')
+    : '';
   const data = contentType.includes('application/json') ? await response.json() : await response.text();
 
   if (!response.ok) {
